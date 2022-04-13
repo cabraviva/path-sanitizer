@@ -1,15 +1,3 @@
-# path-sanitizer
- A simple leightweight node.js package for sanitizing paths to prevent Path Traversal
-
-# Usage
-```js
-const sanitize = require('path-sanitizer')
-
-console.log(sanitize('path/to/file.txt'))
-```
-
-Or here is a more complex example:
-```js
 const sanitize = require('../sanitize')
 const path = require('path')
 
@@ -34,4 +22,3 @@ routeHandler('/hello.txt') // What if the path starts with a slash, and we try t
 routeHandler('////////a\\\\../hhuio.txt') // What if the path is not valid?
 routeHandler(500) // What if the path is not a string?
 routeHandler('/:11^^') // What if the path contains not allowed characters (like ":")?
-```

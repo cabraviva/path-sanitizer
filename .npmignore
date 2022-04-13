@@ -1,2 +1,4 @@
 .dccache
 .git*
+examples/
+.jshintrc
