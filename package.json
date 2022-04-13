@@ -1,0 +1,25 @@
+{
+  "name": "path-sanitizer",
+  "version": "1.0.0",
+  "description": "A simple node.js package for sanitizing paths to prevent Path Traversal",
+  "main": "sanitize.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/greencoder001/path-sanitizer.git"
+  },
+  "keywords": [
+    "path",
+    "sanitize",
+    "sanitizer",
+    "path-sanitizer"
+  ],
+  "author": "greencoder001",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/greencoder001/path-sanitizer/issues"
+  },
+  "homepage": "https://github.com/greencoder001/path-sanitizer#readme"
+}
