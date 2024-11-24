@@ -102,5 +102,9 @@ export default function sanitize(pathstr: string, options: SanitizeOptions = DEF
     sanitizedPath = sanitizedPath.replace(/[\\]/g, '/')
     // Replace double (back)slashes with a single slash
     sanitizedPath = sanitizedPath.replace(/[\/\\]+/g, '/')
-    return sanitizedPath
+
+    // Make sure out is not "."
+    sanitizedPath = sanitizedPath.trim() === '.' ? '' : sanitizedPath
+
+    return sanitizedPath.trim()
 }
