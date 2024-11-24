@@ -4,7 +4,8 @@
     "description": "A simple lightweight npm package for sanitizing paths to prevent Path Traversal",
     "main": "dist/index.js",
     "scripts": {
-        "test": "vitest"
+        "test": "vitest",
+        "build": "tsc"
     },
     "keywords": [],
     "author": "Cabra (https://github.com/cabraviva)",
