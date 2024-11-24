@@ -1,25 +1,26 @@
 {
-  "name": "path-sanitizer",
-  "version": "2.0.0",
-  "description": "A simple node.js package for sanitizing paths to prevent Path Traversal",
-  "main": "sanitize.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/greencoder001/path-sanitizer.git"
-  },
-  "keywords": [
-    "path",
-    "sanitize",
-    "sanitizer",
-    "path-sanitizer"
-  ],
-  "author": "greencoder001",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/greencoder001/path-sanitizer/issues"
-  },
-  "homepage": "https://github.com/greencoder001/path-sanitizer#readme"
+    "name": "path-sanitizer",
+    "version": "1.0.0",
+    "description": "A simple lightweight npm package for sanitizing paths to prevent Path Traversal",
+    "main": "dist/index.js",
+    "scripts": {
+        "test": "vitest"
+    },
+    "keywords": [],
+    "author": "Cabra (https://github.com/cabraviva)",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/cabraviva/path-sanitizer.git"
+    },
+    "bugs": {
+        "url": "https://github.com/cabraviva/path-sanitizer/issues"
+    },
+    "homepage": "https://github.com/cabraviva/path-sanitizer#readme",
+    "types": "dist/index.d.ts",
+    "devDependencies": {
+        "@types/node": "^22.9.3",
+        "typescript": "^5.7.2",
+        "vitest": "^2.1.5"
+    }
 }
