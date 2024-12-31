@@ -20,8 +20,8 @@
     "homepage": "https://github.com/cabraviva/path-sanitizer#readme",
     "types": "dist/index.d.ts",
     "devDependencies": {
-        "@types/node": "^22.9.3",
+        "@types/node": "^22.10.2",
         "typescript": "^5.7.2",
-        "vitest": "^2.1.5"
+        "vitest": "^2.1.8"
     }
 }
