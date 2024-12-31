@@ -103,6 +103,20 @@ export default function sanitize(pathstr: string, options: SanitizeOptions = DEF
     // Replace double (back)slashes with a single slash
     sanitizedPath = sanitizedPath.replace(/[\/\\]+/g, '/')
 
+    // Replace /../ with /
+    sanitizedPath = sanitizedPath.replace(options.parentDirectoryRegEx, '/')
+
+    // Remove ./ or / at start
+    while (sanitizedPath.startsWith('/') || sanitizedPath.startsWith('./') || sanitizedPath.endsWith('/..') || sanitizedPath.endsWith('/../') || sanitizedPath.startsWith('../') || sanitizedPath.startsWith('/../')) {
+        sanitizedPath = sanitizedPath.replace(/^\.\//g, '') // ^./
+        sanitizedPath = sanitizedPath.replace(/^\//g, '') // ^/
+        // Remove ../ | /../ at pos 0 and /.. | /../ at end
+        sanitizedPath = sanitizedPath.replace(/^[\/\\]\.\.[\/\\]/g, '/')
+        sanitizedPath = sanitizedPath.replace(/^\.\.[\/\\]/g, '/')
+        sanitizedPath = sanitizedPath.replace(/[\/\\]\.\.$/g, '/')
+        sanitizedPath = sanitizedPath.replace(/[\/\\]\.\.\/$/g, '/')
+    }
+
     // Make sure out is not "."
     sanitizedPath = sanitizedPath.trim() === '.' ? '' : sanitizedPath
 

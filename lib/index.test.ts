@@ -192,4 +192,8 @@ describe('sanitize() - Vulnerability Tests', () => {
     it('Protects reported vulnerability #1', () => {
         expect(linuxSlash(join('/var/app-dir', sanitize("..=%5c..=%5c..=%5c..=%5c..=%5c..=%5c..=%5cetc/passwd")))).not.toBe('/etc/passwd')
     })
+
+    it('Protects reported vulnerability #2', () => {
+        expect(linuxSlash(join('/var/app', sanitize("./../../test/../../../../../../../../../../etc/passwd")))).not.toBe('/etc/passwd')
+    })
 })
