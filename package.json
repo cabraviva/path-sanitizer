@@ -4,6 +4,13 @@
     "description": "A simple lightweight npm package for sanitizing paths to prevent Path Traversal",
     "type": "module",
     "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        }
+    },
     "scripts": {
         "test": "vitest",
         "build": "tsc"
@@ -19,7 +26,6 @@
         "url": "https://github.com/cabraviva/path-sanitizer/issues"
     },
     "homepage": "https://github.com/cabraviva/path-sanitizer#readme",
-    "types": "dist/index.d.ts",
     "devDependencies": {
         "@types/node": "^22.10.2",
         "typescript": "^5.7.2",
