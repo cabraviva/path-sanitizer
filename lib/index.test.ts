@@ -129,71 +129,106 @@ describe('sanitize()', () => {
 })
 
 describe('sanitize() - Vulnerability Tests', () => {
-    it('does not allow traversal bypass via encoded sequences like "..=%5c"', () => {
-        const input = '..=%5c..=%5c..=%5cetc/passwd'
-        const sanitized = sanitize(input)
-        expect(sanitized).not.toContain('..')
-        expect(sanitized).not.toContain('%5c')
-        expect(sanitized).toBe('etc/passwd')
-    })
+  it('does not allow traversal bypass via encoded sequences like "..=%5c"', () => {
+    const input = '..=%5c..=%5c..=%5cetc/passwd'
+    const sanitized = sanitize(input)
+    expect(sanitized).not.toContain('..')
+    expect(sanitized).not.toContain('%5c')
+    expect(sanitized).toBe('etc/passwd')
+  })
 
-    it('does not allow traversal bypass with mixed slashes and encoding', () => {
-        const input = '..\\..\\%2fetc\\passwd'
-        const sanitized = sanitize(input)
-        expect(sanitized).toBe('etc/passwd')
-    })
+  it('does not allow traversal bypass with mixed slashes and encoding', () => {
+    const input = '..\\..\\%2fetc\\passwd'
+    const sanitized = sanitize(input)
+    expect(sanitized).toBe('etc/passwd')
+  })
 
-    it('removes encoded sequences resembling traversal attempts', () => {
-        const input = '%2e%2e%5c%2e%2e%5c/etc/passwd'
-        const sanitized = sanitize(input)
-        expect(sanitized).toBe('etc/passwd')
-    })
+  it('removes encoded sequences resembling traversal attempts', () => {
+    const input = '%2e%2e%5c%2e%2e%5c/etc/passwd'
+    const sanitized = sanitize(input)
+    expect(sanitized).toBe('etc/passwd')
+  })
 
-    it('handles deeply encoded traversal patterns', () => {
-        const input = '%2e%2e=%5c%2e%2e=%5c../../../../etc/passwd'
-        const sanitized = sanitize(input)
-        expect(sanitized).toBe('etc/passwd')
-    })
+  it('handles deeply encoded traversal patterns', () => {
+    const input = '%2e%2e=%5c%2e%2e=%5c../../../../etc/passwd'
+    const sanitized = sanitize(input)
+    expect(sanitized).toBe('etc/passwd')
+  })
 
-    it('ensures path.join does not reconstruct invalid paths', () => {
-        const basePath = '/var/app-dir'
-        const input = '..=%5c..=%5c..=%5c..=%5ctmp/hacked.txt'
-        const sanitizedPath = sanitize(input)
-        const finalPath = join(basePath, sanitizedPath)
-        expect(linuxSlash(finalPath)).toBe('/var/app-dir/tmp/hacked.txt')
-    })
+  it('ensures path.join does not reconstruct invalid paths', () => {
+    const basePath = '/var/app-dir'
+    const input = '..=%5c..=%5c..=%5c..=%5ctmp/hacked.txt'
+    const sanitizedPath = sanitize(input)
+    const finalPath = join(basePath, sanitizedPath)
+    expect(linuxSlash(finalPath)).toBe('/var/app-dir/tmp/hacked.txt')
+  })
 
-    it('validates against payload: "../../../../../../../../tmp/hacked.txt"', () => {
-        const basePath = '/var/app-dir'
-        const input = '../../../../../../../../tmp/hacked.txt'
-        const sanitizedPath = sanitize(input)
-        const finalPath = join(basePath, sanitizedPath)
-        expect(linuxSlash(finalPath)).toBe('/var/app-dir/tmp/hacked.txt')
-    })
+  it('validates against payload: "../../../../../../../../tmp/hacked.txt"', () => {
+    const basePath = '/var/app-dir'
+    const input = '../../../../../../../../tmp/hacked.txt'
+    const sanitizedPath = sanitize(input)
+    const finalPath = join(basePath, sanitizedPath)
+    expect(linuxSlash(finalPath)).toBe('/var/app-dir/tmp/hacked.txt')
+  })
 
-    it('blocks traversal attempts with complex obfuscation patterns', () => {
-        const input = '%2e%2e\\%2e%2e\\%2e%2e/../etc/passwd'
-        const sanitized = sanitize(input)
-        expect(sanitized).toBe('etc/passwd')
-    })
+  it('blocks traversal attempts with complex obfuscation patterns', () => {
+    const input = '%2e%2e\\%2e%2e\\%2e%2e/../etc/passwd'
+    const sanitized = sanitize(input)
+    expect(sanitized).toBe('etc/passwd')
+  })
 
-    it('strips multiple encoded slashes or backslashes', () => {
-        const input = 'folder/%2f%5csubfolder%2f%5c..%5cfile.txt'
-        const sanitized = sanitize(input)
-        expect(sanitized).toBe('folder/subfolder/file.txt')
-    })
+  it('strips multiple encoded slashes or backslashes', () => {
+    const input = 'folder/%2f%5csubfolder%2f%5c..%5cfile.txt'
+    const sanitized = sanitize(input)
+    expect(sanitized).toBe('folder/subfolder/file.txt')
+  })
 
-    it('handles payloads containing excessive traversal markers', () => {
-        const input = '../../../..\\..\\\\..///etc/passwd'
-        const sanitized = sanitize(input)
-        expect(sanitized).toBe('etc/passwd')
-    })
+  it('handles payloads containing excessive traversal markers', () => {
+    const input = '../../../..\\..\\\\..///etc/passwd'
+    const sanitized = sanitize(input)
+    expect(sanitized).toBe('etc/passwd')
+  })
 
-    it('Protects reported vulnerability #1', () => {
-        expect(linuxSlash(join('/var/app-dir', sanitize("..=%5c..=%5c..=%5c..=%5c..=%5c..=%5c..=%5cetc/passwd")))).not.toBe('/etc/passwd')
-    })
+  it('Protects reported vulnerability #1', () => {
+    expect(
+      linuxSlash(
+        join(
+          '/var/app-dir',
+          sanitize('..=%5c..=%5c..=%5c..=%5c..=%5c..=%5c..=%5cetc/passwd'),
+        ),
+      ),
+    ).not.toBe('/etc/passwd')
+  })
 
-    it('Protects reported vulnerability #2', () => {
-        expect(linuxSlash(join('/var/app', sanitize("./../../test/../../../../../../../../../../etc/passwd")))).not.toBe('/etc/passwd')
-    })
+  it('Protects reported vulnerability #2', () => {
+    expect(
+      linuxSlash(
+        join(
+          '/var/app',
+          sanitize('./../../test/../../../../../../../../../../etc/passwd'),
+        ),
+      ),
+    ).not.toBe('/etc/passwd')
+  })
+
+  // Introduced as of GHSA-g5q3-4w22-rmp2
+  it('Removes trailing .', () => {
+    expect(linuxSlash(sanitize('/var/app/.'))).toBe('var/app')
+  })
+  it('Removes trailing ..', () => {
+    expect(linuxSlash(sanitize('/var/app/..'))).toBe('var/app')
+  })
+  it('Removes only .', () => {
+    expect(linuxSlash(sanitize('.'))).toBe('')
+  })
+  it('Removes only ..', () => {
+    expect(linuxSlash(sanitize('..'))).toBe('')
+  })
+  it('Removes only dots (...)', () => {
+    expect(linuxSlash(sanitize('...'))).toBe('')
+  })
+  it('Removes ../..', () => {
+    expect(linuxSlash(sanitize('../..'))).toBe('')
+  })
+
 })

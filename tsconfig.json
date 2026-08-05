@@ -1,16 +1,13 @@
 {
-    "compilerOptions": {
-        "target": "ESNEXT",
-        "module": "ESNext",
-        "moduleResolution": "node",
-        "declaration": true,
-        "outDir": "./dist",
-        "strict": true
-    },
-    "include": [
-        "lib/*.ts"
-    ],
-    "exclude": [
-        "lib/*.test.ts"
-    ]
+  "compilerOptions": {
+    "target": "ESNEXT",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "declaration": true,
+    "rootDir": "./lib",
+    "outDir": "./dist",
+    "strict": true
+  },
+  "include": ["lib/*.ts"],
+  "exclude": ["lib/*.test.ts"]
 }
