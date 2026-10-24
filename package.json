@@ -1,6 +1,6 @@
 {
   "name": "path-sanitizer",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "description": "A simple lightweight npm package for sanitizing paths to prevent Path Traversal",
   "type": "module",
   "main": "dist/index.js",
