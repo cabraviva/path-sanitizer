@@ -67,7 +67,7 @@ export default function sanitize(
     // Stringify the path
     pathstr = `${pathstr}`
   }
-  let sanitizedPath = pathstr
+  let sanitizedPath = pathstr.trim()
   // ################################################################################################################
   // Decode
   options.decode.forEach((decode) => {
