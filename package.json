@@ -27,8 +27,8 @@
   },
   "homepage": "https://github.com/cabraviva/path-sanitizer#readme",
   "devDependencies": {
-    "@types/node": "^25.3.2",
+    "@types/node": "^25.9.9",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.12"
   }
 }
