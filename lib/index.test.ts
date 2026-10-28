@@ -7,6 +7,14 @@ function linuxSlash(str: string) {
 }
 
 describe('sanitize()', () => {
+  it('null payload', () => {
+    expect(sanitize('\u0000/etc/\u0000passwd\u0000')).toBe('etc/passwd')
+  })
+
+  it('reapplies filters when later cleanup exposes a parent segment', () => {
+    expect(sanitize('/./.. /')).toBe('')
+  })
+
   it('removes parent directory patterns (e.g., ../)', () => {
     const input = '../../etc/passwd'
     const sanitized = sanitize(input)
