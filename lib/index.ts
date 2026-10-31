@@ -4,10 +4,6 @@ export interface SanitizeOptions {
     replacement: string
   }[]
   /**
-   * @deprecated Parent-directory filtering is always enforced internally.
-   */
-  parentDirectoryRegEx?: RegExp
-  /**
    * Characters to be removed from paths because the file system doesn't support these.
    */
   notAllowedRegEx?: RegExp
@@ -42,6 +38,11 @@ export const DEFAULT_OPTIONS: SanitizeOptionsComplete = {
   notAllowedRegEx: /:|\$|!|'|"|@|\+|`|\||=|\u0000/g,
 }
 
+/**
+ * Internal utility function that validates the SanitizeOptions and fills them with DEFAULT_OPTIONS unless already complete.
+ * @param options (incomplete) SanitizeOptions
+ * @returns Fully valid SanitizeOptionsComplete
+ */
 function validateOptions(options: SanitizeOptions): SanitizeOptionsComplete {
   if (!options) return DEFAULT_OPTIONS
 
@@ -53,11 +54,15 @@ function validateOptions(options: SanitizeOptions): SanitizeOptionsComplete {
     decode: Array.isArray(options.decode)
       ? options.decode
       : DEFAULT_OPTIONS.decode,
-    notAllowedRegEx:
-      options.notAllowedRegEx ?? DEFAULT_OPTIONS.notAllowedRegEx,
+    notAllowedRegEx: options.notAllowedRegEx ?? DEFAULT_OPTIONS.notAllowedRegEx,
   }
 }
 
+/**
+ * Internal utility function to normalize slashes in a path (e.g. from '\' to '/')
+ * @param val path string
+ * @returns slash-normalized path
+ */
 function normalizeSlashes(val: string): string {
   // Replace backslashes to forward slashes
   val = val.replaceAll('\\', '/')
@@ -66,17 +71,26 @@ function normalizeSlashes(val: string): string {
   return val
 }
 
+/**
+ * Internal utility function to apply all decode regexes from SanitizeOptions.decode to a path string
+ * @param pathstr a path string
+ * @param decodeOptions valid SanitizeOptionsComplete.decode
+ * @returns a decoded path string
+ */
 function decodePath(
   pathstr: string,
   decodeOptions: SanitizeOptionsComplete['decode'],
 ): string {
-  decodeOptions.forEach((decode) => {
-    pathstr = pathstr.replace(decode.regex, decode.replacement)
-  })
+  for (const decodeOption of decodeOptions) {
+    pathstr = pathstr.replace(decodeOption.regex, decodeOption.replacement)
+  }
 
   return pathstr
 }
 
+/**
+ * Internal utility function to ensure the specified notAllowedRegEx
+ */
 function removeInvalidCharacters(
   pathstr: string,
   notAllowedRegEx: RegExp,
@@ -84,24 +98,32 @@ function removeInvalidCharacters(
   return pathstr.replace(notAllowedRegEx, '')
 }
 
+/**
+ * Internal function which takes a path string and ensures every segment is valid
+ */
 function applyPathFilters(pathString: string): string {
   const filteredPath = pathString
-    .trim()
-    .split('/')
+    .trim() // trim the whole path-string
+    .split('/') // split into path-segments
     .filter((segment) => {
-      const trimmedSegment = segment.trim()
+      const trimmedSegment = segment.trim() // trim every segment
       return (
         trimmedSegment !== '' &&
         trimmedSegment !== '.' &&
         trimmedSegment !== '..'
-      )
+      ) // return whether the segment is a valid path-portion (no '', '.' or '..')
+      // if valid => keep; invalid => remove
     })
-    .join('/')
-    .trim()
-  
-  return /^\.+$/.test(filteredPath) ? '' : filteredPath
+    .join('/') // reconstruct path string
+    .trim() // trim again
+
+  return /^\.+$/.test(filteredPath) ? '' : filteredPath // ensures the path string is not just dots
 }
 
+/**
+ * Failsafe helper function to catch all remaining absolute paths (not wanted by sanitize())
+ * works by ensuring no '/' at start or end and no '..' in a segment in-between
+ */
 function isSafeLinuxRelativePath(pathString: string): boolean {
   return (
     !pathString.startsWith('/') &&
@@ -125,16 +147,13 @@ export default function sanitize(
     pathString = `${pathString}`
   }
 
-  if ( pathString.length > 4096 ) {
+  if (pathString.length > 4096) {
     throw new Error(`filename is over - 4096 characters`)
   }
 
   // Apply every configurable transformation before traversal filtering.
   pathString = decodePath(pathString, validOptions.decode)
-  pathString = removeInvalidCharacters(
-    pathString,
-    validOptions.notAllowedRegEx,
-  )
+  pathString = removeInvalidCharacters(pathString, validOptions.notAllowedRegEx)
   pathString = normalizeSlashes(pathString)
   pathString = applyPathFilters(pathString)
 
